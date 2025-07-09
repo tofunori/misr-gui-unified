@@ -1,39 +1,7 @@
-# Multi-stage Dockerfile for MISR GUI
-# Stage 1: Python 3.6 environment for MISR Toolkit
-FROM continuumio/miniconda3:4.10.3 AS misr-toolkit-env
+# Dockerfile for MISR GUI
+FROM continuumio/miniconda3:latest
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    g++ \
-    libhdf4-dev \
-    libhdf5-dev \
-    libnetcdf-dev \
-    libgdal-dev \
-    gdal-bin \
-    && rm -rf /var/lib/apt/lists/*
-
-# Create Python 3.6 environment
-RUN conda create -n misr-toolkit-py36 python=3.6 -y
-SHELL ["conda", "run", "-n", "misr-toolkit-py36", "/bin/bash", "-c"]
-
-# Install MISR Toolkit dependencies
-RUN conda install -y -c conda-forge \
-    numpy=1.19.5 \
-    gdal=3.2.3 \
-    hdf4=4.2.15 \
-    netcdf4=1.5.8
-
-# Install MISR Toolkit
-# Note: This assumes you have access to MISR Toolkit installation files
-# You may need to adjust this based on your MISR Toolkit source
-COPY misr_toolkit_installation/ /tmp/misr_toolkit/
-RUN cd /tmp/misr_toolkit && python setup.py install
-
-# Stage 2: Main application environment (Python 3.12)
-FROM continuumio/miniconda3:latest AS main-app
-
-# Install system dependencies for GUI
+# Install system dependencies for GUI and MISR Toolkit
 RUN apt-get update && apt-get install -y \
     python3-tk \
     xvfb \
@@ -44,18 +12,37 @@ RUN apt-get update && apt-get install -y \
     libxtst6 \
     libxi6 \
     libgconf-2-4 \
+    gcc \
+    g++ \
+    libhdf4-dev \
+    libhdf5-dev \
+    libnetcdf-dev \
+    libgdal-dev \
+    gdal-bin \
     && rm -rf /var/lib/apt/lists/*
 
-# Create main application environment
+# Create main application environment (Python 3.12)
 RUN conda create -n misr-gui python=3.12 -y
+
+# Create Python 3.6 environment for MISR Toolkit
+RUN conda create -n misr-toolkit-py36 python=3.6 -y
+
+# Install MISR Toolkit dependencies in Python 3.6 environment
+RUN conda install -n misr-toolkit-py36 -y -c conda-forge \
+    numpy=1.19.5 \
+    gdal=3.2.3 \
+    hdf4=4.2.15 \
+    netcdf4=1.5.8
+
+# Switch to main environment for application dependencies
 SHELL ["conda", "run", "-n", "misr-gui", "/bin/bash", "-c"]
 
 # Install Python dependencies
 COPY requirements.txt /app/requirements.txt
 RUN pip install -r /app/requirements.txt
 
-# Copy MISR Toolkit environment from stage 1
-COPY --from=misr-toolkit-env /opt/conda/envs/misr-toolkit-py36 /opt/conda/envs/misr-toolkit-py36
+# Note: MISR Toolkit installation requires manual setup
+# See README_DOCKER.md for instructions
 
 # Copy application code
 COPY . /app/
@@ -66,18 +53,16 @@ ENV DISPLAY=:99
 ENV PYTHONPATH=/app
 
 # Create entrypoint script
-RUN cat > /app/entrypoint.sh << 'EOF'
-#!/bin/bash
-# Start virtual display for GUI
-Xvfb :99 -screen 0 1024x768x24 &
-export DISPLAY=:99
-
-# Wait for display to be ready
-sleep 2
-
-# Activate main environment and run application
-conda run -n misr-gui python main.py
-EOF
+RUN echo '#!/bin/bash' > /app/entrypoint.sh && \
+    echo '# Start virtual display for GUI' >> /app/entrypoint.sh && \
+    echo 'Xvfb :99 -screen 0 1024x768x24 &' >> /app/entrypoint.sh && \
+    echo 'export DISPLAY=:99' >> /app/entrypoint.sh && \
+    echo '' >> /app/entrypoint.sh && \
+    echo '# Wait for display to be ready' >> /app/entrypoint.sh && \
+    echo 'sleep 2' >> /app/entrypoint.sh && \
+    echo '' >> /app/entrypoint.sh && \
+    echo '# Activate main environment and run application' >> /app/entrypoint.sh && \
+    echo 'conda run -n misr-gui python main.py' >> /app/entrypoint.sh
 
 RUN chmod +x /app/entrypoint.sh
 

@@ -1,0 +1,20 @@
+services:
+  misr-gui:
+    build: .
+    container_name: misr-gui-app
+    volumes:
+      # Mount data directory for input/output files
+      - ./data:/app/data
+      - ./output:/app/output
+      # Mount config for persistent settings
+      - ./config:/app/config
+    environment:
+      - DISPLAY=:99
+      - PYTHONPATH=/app
+    # Keep container running
+    tty: true
+    stdin_open: true
+    # For testing - run bash instead of GUI
+    command: /bin/bash
+    # Restart policy
+    restart: unless-stopped
