@@ -15,6 +15,9 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
+REM Navigate to parent directory (where main.py is)
+cd /d "%~dp0.."
+
 REM Install PyInstaller if not available
 echo Installing PyInstaller...
 pip install pyinstaller
@@ -22,6 +25,10 @@ pip install pyinstaller
 REM Install dependencies
 echo Installing dependencies...
 pip install -r requirements.txt
+
+REM Install numpy first (required for MISR Toolkit)
+echo Installing numpy first...
+pip install numpy
 
 REM Try to install MISR Toolkit
 echo Attempting to install MISR Toolkit...
@@ -32,8 +39,9 @@ if %errorlevel% neq 0 (
     echo NetCDF processing will still work
 )
 
-REM Create executable
+REM Create executable from distribution directory
 echo Building executable...
+cd distribution
 pyinstaller --clean misr_gui.spec
 
 REM Check if build was successful
