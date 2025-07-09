@@ -1,7 +1,7 @@
-# Dockerfile for MISR GUI
+# Simple Dockerfile for MISR GUI (NetCDF processing only)
 FROM continuumio/miniconda3:latest
 
-# Install system dependencies for GUI and basic development
+# Install system dependencies for GUI
 RUN apt-get update && apt-get install -y \
     python3-tk \
     xvfb \
@@ -12,27 +12,10 @@ RUN apt-get update && apt-get install -y \
     libxtst6 \
     libxi6 \
     libgconf-2-4 \
-    gcc \
-    g++ \
-    libhdf5-dev \
-    libnetcdf-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install GDAL and HDF4 through conda to avoid conflicts
-RUN conda install -y -c conda-forge gdal hdf4
-
-# Create main application environment (Python 3.12)
+# Create application environment (Python 3.12)
 RUN conda create -n misr-gui python=3.12 -y
-
-# Create Python 3.6 environment for MISR Toolkit
-RUN conda create -n misr-toolkit-py36 python=3.6 -y
-
-# Install MISR Toolkit dependencies in Python 3.6 environment
-RUN conda install -n misr-toolkit-py36 -y -c conda-forge \
-    numpy \
-    gdal \
-    hdf4 \
-    netcdf4
 
 # Switch to main environment for application dependencies
 SHELL ["conda", "run", "-n", "misr-gui", "/bin/bash", "-c"]
@@ -40,9 +23,6 @@ SHELL ["conda", "run", "-n", "misr-gui", "/bin/bash", "-c"]
 # Install Python dependencies
 COPY requirements.txt /app/requirements.txt
 RUN pip install -r /app/requirements.txt
-
-# Note: MISR Toolkit installation requires manual setup
-# See README_DOCKER.md for instructions
 
 # Copy application code
 COPY . /app/

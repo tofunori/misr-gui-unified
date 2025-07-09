@@ -1,0 +1,39 @@
+# Docker Compose for NetCDF processing only (no HDF4 dependencies)
+services:
+  misr-gui:
+    build:
+      context: .
+      dockerfile: Dockerfile.simple
+    container_name: misr-gui-netcdf
+    volumes:
+      # Mount data directory for input/output files
+      - ./data:/app/data
+      - ./output:/app/output
+      # Mount config for persistent settings
+      - ./config:/app/config
+    environment:
+      - DISPLAY=:99
+      - PYTHONPATH=/app
+    # Keep container running
+    tty: true
+    stdin_open: true
+    # Restart policy
+    restart: unless-stopped
+
+  # VNC server for remote GUI access
+  vnc-server:
+    image: consol/ubuntu-xfce-vnc:latest
+    container_name: misr-gui-vnc
+    ports:
+      - "6901:6901"
+      - "5901:5901"
+    environment:
+      - VNC_PW=password
+      - VNC_RESOLUTION=1280x1024
+    volumes:
+      - ./data:/home/data
+      - ./output:/home/output
+    depends_on:
+      - misr-gui
+    profiles:
+      - vnc
