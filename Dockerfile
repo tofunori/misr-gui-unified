@@ -4,7 +4,7 @@ FROM ubuntu:20.04
 # Avoid interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install system dependencies
+# Install system dependencies in stages to avoid conflicts
 RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
@@ -14,19 +14,7 @@ RUN apt-get update && apt-get install -y \
     cmake \
     wget \
     curl \
-    libhdf4-dev \
-    libhdf5-dev \
-    libnetcdf-dev \
-    libgdal-dev \
-    gdal-bin \
-    libproj-dev \
-    libgeos-dev \
-    libspatialindex-dev \
-    libjpeg-dev \
-    libpng-dev \
-    libfreetype6-dev \
     pkg-config \
-    libffi-dev \
     libssl-dev \
     zlib1g-dev \
     libbz2-dev \
@@ -39,10 +27,29 @@ RUN apt-get update && apt-get install -y \
     libxmlsec1-dev \
     libffi-dev \
     liblzma-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libfreetype6-dev \
     # GUI dependencies for X11 forwarding
     python3-tk \
     xauth \
     x11-apps \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install HDF and geospatial libraries separately to avoid conflicts
+RUN apt-get update && apt-get install -y \
+    libhdf4-alt-dev \
+    libhdf5-dev \
+    libnetcdf-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install GDAL and spatial libraries
+RUN apt-get update && apt-get install -y \
+    gdal-bin \
+    libgdal-dev \
+    libproj-dev \
+    libgeos-dev \
+    libspatialindex-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Create a working directory
@@ -83,7 +90,7 @@ RUN pip3 install --no-cache-dir MisrToolkit
 COPY . .
 
 # Set Python path
-ENV PYTHONPATH=/app:$PYTHONPATH
+ENV PYTHONPATH=/app
 
 # Create a non-root user for security
 RUN useradd -m -s /bin/bash misruser && \

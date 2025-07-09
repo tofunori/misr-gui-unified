@@ -1,0 +1,53 @@
+# Simple MISR GUI Docker Container
+FROM ubuntu:20.04
+
+# Avoid interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install basic dependencies
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    python3-tk \
+    git \
+    wget \
+    curl \
+    xauth \
+    x11-apps \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create working directory
+WORKDIR /app
+
+# Copy requirements first for better caching
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Try to install MISR Toolkit
+RUN pip3 install --no-cache-dir MisrToolkit || echo "MISR Toolkit installation failed, continuing..."
+
+# Copy application code
+COPY . .
+
+# Set environment
+ENV PYTHONPATH=/app
+ENV DISPLAY=:0
+
+# Create startup script
+RUN echo '#!/bin/bash\n\
+echo "================================="\n\
+echo "MISR GUI Docker Container"\n\
+echo "================================="\n\
+echo ""\n\
+echo "Checking available processing modes..."\n\
+python3 -c "try: import MisrToolkit; print(\\"✅ HDF Processing (MISR Toolkit)\\"); except: print(\\"❌ HDF Processing (MISR Toolkit not available)\\")"\n\
+python3 -c "try: import xarray; print(\\"✅ NetCDF Processing (Advanced)\\"); except: print(\\"❌ NetCDF Processing failed\\")"\n\
+echo ""\n\
+echo "Starting MISR GUI..."\n\
+python3 main.py' > /app/start_gui.sh && \
+chmod +x /app/start_gui.sh
+
+# Default command
+CMD ["/app/start_gui.sh"]
