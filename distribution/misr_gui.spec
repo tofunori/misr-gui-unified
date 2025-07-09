@@ -1,10 +1,12 @@
 # PyInstaller spec file for MISR GUI Windows executable
 
 import sys
+import os
 from pathlib import Path
 
 # Get the main application directory
-app_dir = Path(__file__).parent.parent
+spec_dir = Path(os.path.abspath(SPECPATH))
+app_dir = spec_dir.parent
 
 a = Analysis(
     [str(app_dir / 'main.py')],
