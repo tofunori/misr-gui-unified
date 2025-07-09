@@ -17,6 +17,15 @@ if %errorlevel% neq 0 (
 
 REM Navigate to parent directory (where main.py is)
 cd /d "%~dp0.."
+echo Current directory: %CD%
+
+REM Check if main.py exists
+if not exist "main.py" (
+    echo ERROR: main.py not found in current directory
+    echo Please run this script from the misr_gui_unified directory
+    pause
+    exit /b 1
+)
 
 REM Install PyInstaller if not available
 echo Installing PyInstaller...
@@ -24,7 +33,12 @@ pip install pyinstaller
 
 REM Install dependencies
 echo Installing dependencies...
-pip install -r requirements.txt
+if exist "requirements.txt" (
+    pip install -r requirements.txt
+) else (
+    echo WARNING: requirements.txt not found, installing basic dependencies
+    pip install xarray numpy scipy rasterio rioxarray geopandas fiona shapely pyproj netCDF4 h5py matplotlib pillow
+)
 
 REM Install numpy first (required for MISR Toolkit)
 echo Installing numpy first...
@@ -39,10 +53,9 @@ if %errorlevel% neq 0 (
     echo NetCDF processing will still work
 )
 
-REM Create executable from distribution directory
+REM Create executable using simple PyInstaller command
 echo Building executable...
-cd distribution
-pyinstaller --clean misr_gui.spec
+pyinstaller --onefile --windowed --name misr_gui --add-data "gui;gui" --add-data "processing_core;processing_core" --add-data "processing_hdf;processing_hdf" --add-data "config;config" --add-data "utils;utils" --hidden-import tkinter --hidden-import matplotlib.backends.backend_tkagg --exclude-module matplotlib.tests --exclude-module numpy.tests --exclude-module scipy.tests main.py
 
 REM Check if build was successful
 if exist "dist\misr_gui.exe" (
