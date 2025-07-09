@@ -1,0 +1,39 @@
+{
+  "name": "Bologna Glacier",
+  "description": "Configuration preset for Bologna Glacier, Brintnell-Bologna Icefield, Northwest Territories, Canada",
+  "location": {
+    "latitude": 62.06,
+    "longitude": -127.00,
+    "description": "Bologna Glacier, Brintnell-Bologna Icefield, Nahanni National Park Reserve, NWT"
+  },
+  "processing_config": {
+    "target_lat": 62.06,
+    "target_lon": -127.00,
+    "region_margin": 2.0,
+    "target_resolution": 0.0025,
+    "enable_qa_filtering": false,
+    "enable_clipping": false,
+    "validate_inputs": true,
+    "export_netcdf": true,
+    "export_geotiff": true,
+    "add_timestamp": true,
+    "overwrite_existing": false
+  },
+  "notes": [
+    "Bologna Glacier is part of the Brintnell-Bologna Icefield in Northwest Territories",
+    "Located within Nahanni National Park Reserve, roughly 350 km west of Fort Simpson",
+    "This is the largest ice field in Northwest Territories",
+    "The region margin of 2.0° provides good coverage for glacial analysis",
+    "Target resolution of 0.0025° (~275m) matches MISR native resolution"
+  ],
+  "validation": {
+    "expected_coordinate_range": {
+      "latitude": [60.0, 64.0],
+      "longitude": [-130.0, -125.0]
+    },
+    "data_format": "HDF4",
+    "recommended_bands": ["Red", "NIR", "Green", "Blue"]
+  },
+  "created": "2025-07-09",
+  "version": "1.0"
+}

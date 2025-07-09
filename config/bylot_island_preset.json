@@ -1,0 +1,41 @@
+{
+  "name": "Bylot Island",
+  "description": "Configuration preset for Bylot Island glaciers, Nunavut, Arctic Canada",
+  "location": {
+    "latitude": 73.2667,
+    "longitude": -78.5000,
+    "description": "Bylot Island, Sirmilik National Park, Nunavut, Canada"
+  },
+  "processing_config": {
+    "target_lat": 73.2667,
+    "target_lon": -78.5000,
+    "region_margin": 2.0,
+    "target_resolution": 0.0025,
+    "enable_qa_filtering": false,
+    "enable_clipping": false,
+    "validate_inputs": true,
+    "export_netcdf": true,
+    "export_geotiff": true,
+    "add_timestamp": true,
+    "overwrite_existing": false
+  },
+  "notes": [
+    "Bylot Island is located east of northern Baffin Island in the Canadian Arctic",
+    "Part of Sirmilik National Park, Nunavut",
+    "One of the largest uninhabited islands in the world (11,067 km²)",
+    "43% ice covered with extensive glaciation including glacier C93",
+    "Ice is centered on the Byam Martin Mountains with radial valley glaciers",
+    "The region margin of 2.0° provides good coverage for Arctic glacier analysis",
+    "Target resolution of 0.0025° (~275m) matches MISR native resolution"
+  ],
+  "validation": {
+    "expected_coordinate_range": {
+      "latitude": [72.5, 74.0],
+      "longitude": [-81.0, -76.0]
+    },
+    "data_format": "HDF4",
+    "recommended_bands": ["Red", "NIR", "Green", "Blue"]
+  },
+  "created": "2025-07-09",
+  "version": "1.0"
+}

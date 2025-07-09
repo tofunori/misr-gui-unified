@@ -1,0 +1,40 @@
+{
+  "name": "Ausangate Glacier",
+  "description": "Configuration preset for Ausangate Glacier, Vilcanota mountain range, Peru",
+  "location": {
+    "latitude": -13.7881,
+    "longitude": -71.2308,
+    "description": "Ausangate Glacier, Vilcanota mountain range, Cusco Region, Peru"
+  },
+  "processing_config": {
+    "target_lat": -13.7881,
+    "target_lon": -71.2308,
+    "region_margin": 2.0,
+    "target_resolution": 0.0025,
+    "enable_qa_filtering": false,
+    "enable_clipping": false,
+    "validate_inputs": true,
+    "export_netcdf": true,
+    "export_geotiff": true,
+    "add_timestamp": true,
+    "overwrite_existing": false
+  },
+  "notes": [
+    "Ausangate is a mountain of the Vilcanota mountain range in the Andes of Peru",
+    "Located approximately 100 kilometers southeast of Cusco",
+    "Elevation of 6,384 metres, situated in the Cusco Region",
+    "Near the famous Rainbow Mountain (Vinicunca)",
+    "The region margin of 2.0° provides good coverage for Andean glacier analysis",
+    "Target resolution of 0.0025° (~275m) matches MISR native resolution"
+  ],
+  "validation": {
+    "expected_coordinate_range": {
+      "latitude": [-16.0, -12.0],
+      "longitude": [-73.0, -69.0]
+    },
+    "data_format": "HDF4",
+    "recommended_bands": ["Red", "NIR", "Green", "Blue"]
+  },
+  "created": "2025-07-09",
+  "version": "1.0"
+}
