@@ -11,5 +11,6 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from misr_processor import MISRProcessor
 from misr_adapter import MISRProcessingAdapter
+from unified_processor import UnifiedMISRProcessor
 
-__all__ = ["MISRProcessor", "MISRProcessingAdapter"]
+__all__ = ["MISRProcessor", "MISRProcessingAdapter", "UnifiedMISRProcessor"]
